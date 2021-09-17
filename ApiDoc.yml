@@ -1,0 +1,142 @@
+openapi: '3.0.2'
+info:
+  title: Rock paper scissors Api
+  description: 'This is a documentation of Api responsible for managment of player and game in rock paper scissors.
+                There is a front-end UI which uses this Api to play a game from browser.'
+  version: '1.0'
+servers:
+  - url: http://localhost:3001
+
+tags:
+  - name: player
+    description: Manage player
+  - name: rounds
+    description: Manage rounds of player
+
+components:
+  schemas:
+    Round:
+      required:
+        - _id
+        - firstPlayer
+        - secondPlayer
+      type: object
+      properties:
+        _id:
+          type: string
+        firstPlayer:
+          type: string
+        secondPlayer:
+          type: string
+        result:
+          type: string
+    Player:
+      required:
+        - _id
+      type: object
+      properties:
+        _id:
+          type: string
+        rounds:
+          type: array
+          items: 
+            $ref: '#/components/schemas/Round'
+      xml:
+        name: Player
+paths:
+  /player:
+    post:
+      tags:
+        - player
+      summary: Create new player
+      responses:
+        '201':
+          description: Return created player
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Player'
+        '400':
+          description: Error
+  /player/{id}:
+    get:
+      tags:
+        - player
+      summary: Get player with rounds
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: 
+            type : string
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Player'
+        '404':
+          description: Cannot find player
+        '500':
+          description: Internal server error
+
+    post:
+      tags:
+        - rounds
+      summary: Add new round to player
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: 
+            type : string
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Player'
+        '404':
+          description: Cannot find player
+        '500':
+          description: Internal server error
+
+    delete:
+      tags:
+        - player
+      summary: Delete one player 
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: 
+            type : string
+      responses:
+        '200':
+          description: Deleted player
+        '404':
+          description: Cannot find player
+        '500':
+          description: Internal server error
+
+
+  /player/{id}/rounds:
+    delete:
+      tags:
+        - rounds
+      summary: Delete all rounds of one player
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: 
+            type : string
+      responses:
+        '200':
+          description: Deleted all rounds of player
+        '404':
+          description: Cannot find player
+        '500':
+          description: Internal server error
